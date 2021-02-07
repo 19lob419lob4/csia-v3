@@ -28,22 +28,24 @@ class App extends React.Component {
     this.passwordFieldChange = this.passwordFieldChange.bind(this);
   };
 
-
+  //switch between notes and flaschards
   toggleMenu(x){
     this.setState({mode:x})
   }
 
+  //when component mounts, check if the user is logged in such that a reload will not log out user
   async componentDidMount(){
     this.loginStatus();
   }
 
-
+  //login poast request to server
   login = async(e)=>{
     e.preventDefault();
     
     axios.post(domain+'/login',{password:this.state.password})
       .then(res => {
         this.setState({password:''})
+        //checks if password is correct
         if(res.data.passwordCorrect){
           this.setState({login:true})
         }else{
@@ -58,6 +60,7 @@ class App extends React.Component {
       })
   }
 
+  //check if user is lgoged in to prevent logout after refresh
   loginStatus= async()=>{
     axios.get(domain+'/loggedIn')
       .then(res =>{
@@ -71,11 +74,13 @@ class App extends React.Component {
         console.log(err)
       })
   }
-
+  
+  //handles changes in the password textarea field
   passwordFieldChange(e){
     this.setState({password:e.target.value})
   }
   
+  //sends logout request
   logOut =async()=>{
     axios.post(domain+'/logout')
     .then(res=> {
@@ -99,8 +104,6 @@ class App extends React.Component {
                   <button style={{alignSelf:'flex-end'}} onClick={()=>this.toggleMenu(0)}>Notes</button>
                   <button onClick={()=>this.toggleMenu(1)}>Flashcards</button>   
                 </div>
-        
-                {/* blank div for grid column block... */}
                 <div></div> 
         
                 <Menu mode={this.state.mode} loggedIn={this.state.loggedIn}/>

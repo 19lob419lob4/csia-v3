@@ -9,15 +9,15 @@ var cors = require('cors');
 const Subject = require('./schemas/subjectSchema');
 const Topic = require('./schemas/topicSchema-ClassVer');
 
-
-
 var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(cors());
 
+//intializes loggedIn to be false
 var loggedIn = false;
 
+//runs when there is a login request
 var mongoServer = async(mongoAtlasUri,res)=>{
     // connect to mongodb cluster databse with mongoose
     mongoose
@@ -27,8 +27,7 @@ var mongoServer = async(mongoAtlasUri,res)=>{
             loggedIn = true;
             console.log("Mongoose - Sucess!");
         
-            // the following lines make up the CRUD api...
-            
+            // the following lines make up the CRUD (CREATE READ UPDATE DELETE) api...
 
             // get data
             app.get('/subjects', async(req,res)=>{
@@ -119,12 +118,15 @@ var mongoServer = async(mongoAtlasUri,res)=>{
 }
 
 //authentication
+
+//login request with password
 app.post('/login', async(req,res)=>{
     try{
 
         let password = req.body.password;
+
+        //tries to connect to mongodb with given password
         let mongoAtlasUri ="mongodb+srv://19lob4:"+ password +"@cardify.onbct.mongodb.net/subjects?retryWrites=true&w=majority";
-        //res.send();
         mongoServer(mongoAtlasUri,res);
 
     } catch(err){
@@ -133,7 +135,7 @@ app.post('/login', async(req,res)=>{
     }
 });
 
-
+//validates wether or not user has logged
 app.get('/loggedIn', async(req,res)=>{
     try{
         res.send({login_status:loggedIn});
@@ -142,6 +144,7 @@ app.get('/loggedIn', async(req,res)=>{
     }
 })
 
+//accepts logout request
 app.post('/logout', async(req,res)=>{
     try{
         mongoose.connection.close();

@@ -4,10 +4,10 @@ import uniqid from 'uniqid'
 import axios from 'axios';
 
 const domain = 'http://3.12.162.222'
+//during development localhost was used...
 //const domain = 'http://localhost:8080'
 
 class Menu extends React.Component {
-  
   
   constructor(props){
     super(props)
@@ -68,29 +68,38 @@ class Menu extends React.Component {
 
   }
 
+  //this function is used to handle changes made in the invidual edit object fields when intially loaded (single note textarea - ie. apple is red )
   handleChange(x,event){
     let currentValues = this.state.editValues;
     currentValues[x] = event.target.value;
-
+    //due to the nature of react, when a state is updated, components are refreshed, which results in the blurring (unfocsing) from textareas
+    //to fix this, the function below is added, changing the editPos, such that focus/carcet position is regained after state update
     this.setState({editValues:currentValues, editingObj:x, editPos:[event.target.selectionStart,event.target.selectionEnd]})
 
   }
 
+  //update addSubject state value so it is ready for post request
   addSubject(e){
     this.setState({addSubject:e.target.value})
   }
 
+  //update addSubtopic state value so it is ready for post request
   addSubtopic(e){
     this.setState({addSubtopic:e.target.value})
   }
 
+  //this function is used to handle changes made in the invidual edit object fields that are added ( not initially loaded - new notes )
   changeEditValue(event){
    this.setState({newEditValue:event.target.value})
   }
 
+  //when the component first loads or 'mounts', the below functions are ran
   async componentDidMount(){
-
+    //get request for data
     this.getData()
+
+    //due to the nature of react, when a state is updated, components are refreshed, which results in the blurring (unfocsing) from textareas
+    //to fix this, the function below is added, changing the editPos, such that focus/carcet position is regained after state update
 
     window.addEventListener("keyup",()=>{
       let editobj = document.getElementById('e' +this.state.editingObj);
@@ -105,11 +114,12 @@ class Menu extends React.Component {
     
   }
 
-
+  //sends get request to express server
   async getData(){
     axios.get(domain + '/subjects')
         .then(response =>{   
             let data = response.data;
+            //if data is sucessfully retrieved then the subjects state is updated and loadingData is set to false
             this.setState({subjects:data, loadingData:false});
 
         })
@@ -118,6 +128,9 @@ class Menu extends React.Component {
         })
   }
 
+  //this was implemented to fix the subtopics menu not updating after deleting subtopics. 
+  //the reason behind this was that the get request only updated the data when exiting editing interface or reloading
+  //the fix was to request specific data upon modifying the available suptopics
   async updateSubjectData(){
     axios.get(domain + '/subjects')
     .then(response =>{   
@@ -130,28 +143,39 @@ class Menu extends React.Component {
     })
   }
 
+
+  //this is used to switch through subtopics in the subtopic menu
+  //x is an integer
+  //x is a certain number assigned to the array of subtopic objects using the .map function
+  //for example if the array had [a,b,c]
+  //the indivudal divs would be:
+  // <div key=0 switchTopic(0)>a</div> 
+  // <div key=1 switchTopic(1)>b</div> 
+  // <div key=2 switchTopic(2)>c</div> 
   switchTopic(x){
+    //the topic rendered is governed by the activeTopic sate
     this.setState({activeTopic:x})
 
+    //below is a loop that renders the notes within the topic object subtopics exist
     let values = [];
+    //if statement to debug undefined error in new subjects where no subtopics exist
     if(typeof (this.state.subjects[this.state.activeSubject].topics[x]) != 'undefined'){
       let statementList = this.state.subjects[this.state.activeSubject].topics[x].content;
+      //below is a for loop that checks for a presence of a keyword in the note and adds it to values array for rendering
       for(let i=0; i<statementList.length; i++){
         let before = statementList[i].before;
         let keyword = statementList[i].keyword ==-1?'':this.state.keywords[statementList[i].keyword];
         let after = this.renderARE(statementList[i].after);
-  
-  
-  
+
+        //converts content object into readable text on the interface
         values.push(before + ' ' + keyword + ' ' + after);        
       }
     }
 
-
     this.setState({editValues:values});
-
   }
 
+  //this is specific for the ARE keyowrd as ARE means that there is more than one answer and the rendering is updated such that a plus + sign is added in between the words
   renderARE(items){
     let result =''
 
@@ -165,11 +189,13 @@ class Menu extends React.Component {
     return result
   }
 
+  //this is opposite to the function above, coverting the text from the interface into a content.after array
   saveARE(areString){
     var areArr = areString.split(' + ');
     return areArr;
   }
   
+  //this function follows the same idea as switchTopic(x), but for the subjects in the general subject menu
   loadSubject(x){
 
     if(this.state.deleteSubjectMode==false){
@@ -203,10 +229,9 @@ class Menu extends React.Component {
   
       this.setState({editValues:values});
     }
-
-
   }
 
+  //sends post request to update subjects
   updateSubjects=async(e)=>{
     e.preventDefault();
     axios.post(domain + '/subjects/',{subjectName:this.state.addSubject})
@@ -221,12 +246,14 @@ class Menu extends React.Component {
     setTimeout(()=>this.getData(),100);
   }
 
+  //sends post request to update subtopics of a subject
   updateSubtopics = async(e)=>{
     e.preventDefault();
 
     let newsubtopic = this.state.addSubtopic;
 
     let postAddress = domain + '/subtopics/' + this.state.subjectData._id;
+    
     axios.post(postAddress,{topicName:newsubtopic})
       .then(response => {
         //console.log(response)
@@ -234,9 +261,11 @@ class Menu extends React.Component {
       .catch(error =>{
         //console.log(error)
     })
+
+    //dynamically update data using forceUpdate
     this.forceUpdate();
 
-
+    //update static data prior to subtopic data get request
     let staticTopics = this.state.subjects[this.state.activeSubject].topics;
     staticTopics.push({
       topicName:this.state.addSubtopic,
@@ -246,13 +275,14 @@ class Menu extends React.Component {
     let updatedStaticData= this.state.subjects;
     updatedStaticData[this.state.activeSubject].topics = staticTopics;
 
-
+    //update static data in the state before save (and update dynamically with the get request)
     this.setState({addSubtopicMode:false,addSubtopic:'',subjects:updatedStaticData,activeTopic:this.state.activeTopic+1});
     
     this.switchTopic(this.state.activeTopic)
     
   }
 
+  //delete request to remove a subtopic
   removeSubtopic=async(e)=>{
     e.preventDefault()
 
@@ -265,10 +295,11 @@ class Menu extends React.Component {
         //console.log(error)
     });
     
+    //get data such that interface will be updated once exited back to main subject menu
     this.forceUpdate();
     setTimeout(()=>this.getData(),100);
 
-
+    //update subtopic data statically
     let staticTopics = this.state.subjects[this.state.activeSubject].topics;
 
     staticTopics.splice(this.state.activeTopic,1);
@@ -279,12 +310,13 @@ class Menu extends React.Component {
     this.switchTopic(0)
     this.setState({subjects:updatedStaticData,activeTopic:0})
     
+    //update subtopic data dynamically
     setTimeout(()=>this.updateSubjectData(),100);
     this.forceUpdate();
     
   }
 
-
+  //delete request to remove a subject
   removeSubject=async(id,e)=>{
     e.preventDefault();
     let deleteAddress = domain + '/subjects/' + id;
@@ -301,16 +333,18 @@ class Menu extends React.Component {
     this.forceUpdate();
   }
 
-
+  //adding new edit object (note content object - ie.'apple is red') to the state
   addEditObj(){
     if(this.state.newEditValue!=''){
       this.setState({newEdit:true})
     
       let currentValues = this.state.editValues;
       currentValues.push(this.state.newEditValue);
-  
+      
+      //clears existing states of previous editValue that was being edited
       this.setState({editValues:currentValues, newEditValue:'', newEdit:false})
   
+      //refocus after state update
       var addEditObj = document.getElementById('addEditObj');
       addEditObj.value = ''
       addEditObj.focus();
@@ -318,6 +352,7 @@ class Menu extends React.Component {
 
   }
 
+  //process edits and send put request to update data
   saveEdits=async(e)=>{
     e.preventDefault();
     //checking which statements contains keyword (is, are, because)
@@ -341,6 +376,7 @@ class Menu extends React.Component {
           //update keywordStatements
 
           let updateStatus;
+          //checks if there is now a keyword in previous/new editObjects
           if(typeof(this.state.subjects[this.state.activeSubject].topics[this.state.activeTopic].content[j])=='undefined'){
             updateStatus = 0
           }else if(this.state.subjects[this.state.activeSubject].topics[this.state.activeTopic].content[j].status==1){
@@ -360,11 +396,11 @@ class Menu extends React.Component {
         
       }
       if(keywordStatement!=null){
-        // keywordStatement.status = this.state.editValues[j]
-
         updatedStatements.push(keywordStatement)
       }else{
+        //checks for excess whitespace
         if(!(!this.state.editValues[j].replace(/\s/g, '').length)){
+          //adds the new content object to updatedStatements array
           updatedStatements.push({before:this.state.editValues[j], keyword:-1, after:[], status:1})
         }
       }
@@ -372,7 +408,7 @@ class Menu extends React.Component {
     //update database...
     let currentData = this.state.subjectData;
 
-    
+    //replace previous subtopic content with new updatedStatements
     currentData.topics[this.state.activeTopic].content = updatedStatements;
     
     ////console.log(currentData)
@@ -394,14 +430,17 @@ class Menu extends React.Component {
     this.forceUpdate();
   }
 
-
+  //loads flashcards
   loadFlashcardDeck(x){
     this.forceUpdate();
+    //declare data in variable deckData
     let deckData = this.state.subjectData.topics[x].content;
 
     let finalDeckData = []
 
+    //adds flashcards
     for(let i=0; i<deckData.length; i++){
+      //checks if the flashcard has a keyword (if the note can be converted to the flaschard or not)
       if(deckData[i].status!=1){
         finalDeckData.push(deckData[i])
       }
@@ -410,6 +449,7 @@ class Menu extends React.Component {
     let zPos = [];
     let doneCards = [];
 
+    //creates z-index array according to number of valid cards
     for(let z=0; z<finalDeckData.length; z++){
       zPos.push(z);
       doneCards.push('grid');
@@ -418,6 +458,7 @@ class Menu extends React.Component {
     this.setState({flashcardDeck:finalDeckData, flashcardZPos:zPos, doneCards:doneCards, openDeck:true})
   }
 
+  //allows flashcards to appear above one another and rotate
   rotateFlashcard(doneCard){
     //doneCard is boolean value
     //check if card is 'good' or 'again' for user...
@@ -451,17 +492,18 @@ class Menu extends React.Component {
 
   }
 
+  //progressbar function depending on the number of flascards left over
   progressBar(){
-
+    //use of grid-template style property to seperate into sections by number of flashcards
     let template = 'repeat(' + this.state.doneCards.length + ',1fr)'
 
     let style = {
       gridTemplateColumns: template
     }
-
     return style;
   }
 
+  //fills in the progressbar as flashcards are completed
   progressBarInner(){
     let gridColumn;
 
@@ -472,6 +514,10 @@ class Menu extends React.Component {
         background:'transparent'
       }
     }else{
+      //ie if there are 4 cards...
+      //when one is completed gridColumn property = 1/2
+      //when two is completed gridColumn property = 1/3
+      //...until 1/(4+1)
       gridColumn= '1/' + (this.state.doneCount + 1);
 
       style = {
@@ -481,10 +527,11 @@ class Menu extends React.Component {
     return style;
   }
 
+  //depending on keyword, different premodifier for quetsion is used...
   flashcardQuestion(key){
 
     let premodifer;
-
+    //ie. if keyword is 'Because' then "Why...", else if "ARE or is", "What..."
     if(key==2){
       premodifer = 'Why '
     }else{
@@ -495,19 +542,22 @@ class Menu extends React.Component {
   }
 
   render(){
-
+    //render subjects
     let renderSubjects;
+    //checks if the data has been retrieved and if the mode is notes-mode
     if (this.state.loadingData==false && this.state.flashcardMode==false){
       renderSubjects = this.state.subjects.map((subject,x) =>
         <a 
         className='subjectItem' 
         key={uniqid()} 
         style={this.props.mode==0?{background: 'linear-gradient(to bottom, royalblue, royalblue 60%, #d3d3d3 60%, #d3d3d3 100%)'}:{background: 'linear-gradient(to bottom, red, red 60%, #d3d3d3 60%, #d3d3d3 100%)'}}
+        //as explained above...the loadSubject(x) is used below in this .map function
         onClick={()=>{this.loadSubject(x)}}
         >
 
           <button 
           style = {this.state.deleteSubjectMode?{display:'grid'}:{display:'none'}}
+          //each subject as a delete button that passes their own speicic subject id...this is only possible because of the .map function
           className="deleteSubject" onClick={(e)=>this.removeSubject(subject._id,e)}><span>X</span></button>
           
           <p>{subject.subjectName}</p>
@@ -522,7 +572,7 @@ class Menu extends React.Component {
     }
 
 
-
+    //menu that maps each menu item to switchTopic(x) once again
     let focusMenu;
     if(this.state.subjectFocus){
       let subtopics = this.state.subjectData.topics;
@@ -538,6 +588,7 @@ class Menu extends React.Component {
 
     if((this.state.subjectFocus)&&(this.state.subjectData.topics[this.state.activeTopic]!=undefined)){
       let statementList = this.state.subjectData.topics[this.state.activeTopic].content;
+      //loads content converting them each note according to the content object
       content = statementList.map((statement, x)=>
         <div className='contentObj' key={uniqid()}>
           <p>{statement.before}&nbsp;
@@ -545,6 +596,7 @@ class Menu extends React.Component {
           &nbsp;{this.renderARE(statement.after)}</p>
         </div>
       )
+      //if keyword is present then there will blue span around the keyword ^
     }
 
 
@@ -567,7 +619,7 @@ class Menu extends React.Component {
 
 
     let flashcardTopicMenu;
-
+    //same as the subject rendering menu
     if(this.state.flashcardMode){
       flashcardTopicMenu = this.state.subjectData.topics.map((topic, x)=>
         <a className='flashCardTopicItem' key={uniqid()} onClick={()=>this.loadFlashcardDeck(x)}>
@@ -581,7 +633,8 @@ class Menu extends React.Component {
 
 
     let flashcardDeck;
-
+    //renders flaschards, giving each a zIndex accordign the state such that the zIndexes of each card can be dynamically cahnged
+    //flashcards are rendered according to content object
     if(this.state.openDeck){
       flashcardDeck = this.state.flashcardDeck.map((card, x)=>
         <div key={uniqid()} 
@@ -604,7 +657,7 @@ class Menu extends React.Component {
 
 
 
-// {/* mode this.props ==mode */}
+
     return(
 
       <div style={{display:'grid'}}>
