@@ -1,0 +1,411 @@
+.subjectWrapper{
+    padding: 10vh 10px 0 10px;
+    height: 90vh;
+    max-height: 1000px;
+    width: 70%;
+    min-width: 500px;
+    justify-self: center;
+}
+
+.subjectItemWrapper{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-row-gap: 30px;
+    overflow: auto;
+    height: 100%;
+}
+
+@media(max-width:1400px){
+    .subjectWrapper{
+        padding: 10vh 5px 0 5px;
+        width: 80%;
+    }
+
+    .subjectWrapper div{
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media(max-width:910px){
+    .subjectWrapper{
+        width: 95%;
+    }
+
+}
+
+
+.subjectItem{
+    border-radius: 35px;
+    justify-self: center;
+    
+    height:300px;
+    width:250px;
+
+    display: grid;
+    grid-template-rows: 3fr 2fr;
+
+    position: relative;
+}
+
+.subjectItem p{
+    justify-self: center;
+    align-self: center;
+    width: max-content;
+    height: max-content;
+}
+
+.deleteSubject{
+    position: absolute;
+    right:20px;
+    top:20px;
+    z-index: 10;
+    
+    border-radius: 50px;
+    height: 20px;
+    width: 20px;
+    
+}
+
+.deleteSubject span{
+    height: max-content;
+    width: max-content;
+    justify-self: center;
+    align-self: center;
+    color: royalblue;
+    transform: scaleY(0.8);
+}
+
+.addSubjectItem{
+    background:rgb(211, 211, 211);
+    display: grid;
+}
+
+.addSubjectItem p{
+    grid-row: 1/10;
+    font-size: 4em;
+    font-weight: 600;
+}
+
+.addSubjectItem form{
+    grid-row: 1/10;
+    display: grid;
+    background: transparent;
+    grid-template-rows: 3fr 2fr;
+}
+
+.addSubjectInput{
+    background: transparent;
+    justify-self: center;
+    width: 80%;
+    font-size: 1.1em;
+    text-align: center;
+    color:royalblue;
+}
+
+.addSubjectItem button{
+    background: royalblue;
+    border-radius: 0 0 25px 25px;
+    color:white;
+}
+
+.editSubjects{
+    position: absolute;
+    top:50%;
+    right:20px;
+    padding: 5px 10px 5px 10px;
+    border: 2px royalblue solid;
+    border-radius: 25px;
+    color:royalblue;
+}
+
+
+/* when focused onto subject... */
+
+.focusMenu{
+    position: absolute;
+    top:0;
+    left:0;
+    display: grid;
+    width: 250px;
+    margin-top:30px;
+    height: calc(100vh - 100px);
+
+    grid-auto-rows: minmax(50px, 70px);
+}
+
+.focusMenu a{
+    height: max-content;
+    width: max-content;
+    align-self: center;
+    padding-left: 50px;
+}
+
+
+
+.backButton{
+    background:transparent;
+    height: max-content;
+    width: max-content;
+    justify-self: center;
+    align-self: center;
+    border: 1px solid white;
+    border-radius: 25px;
+    padding: 5px 20px 5px 20px;
+    color: white;
+    font-weight: 500;
+}
+
+.subjectContentWrapper{
+    display: grid;
+    grid-template-columns: auto 180px;
+}
+
+.contentButton{
+    display: grid;
+
+}
+
+.contentButton button{
+    background: none;
+    width: max-content;
+    height: max-content;
+    justify-self: center;
+
+    border: 1px solid;
+    border-radius: 25px;
+    padding: 5px 20px 5px 20px;
+    margin: 5px 0 5px 0;
+}
+
+.content{
+    width:90%;
+    max-height: calc(100vh-100px);
+    margin: 100px 5% 0 5%;
+
+    display: grid;
+    grid-auto-rows: 60px;
+}
+
+
+.contentObj span{
+    border: royalblue 2px solid;
+    border-radius: 20px;
+    padding: 0 7px 0px 7px;
+    color: royalblue;
+    font-weight: 500;
+    height: max-content;
+}
+
+/* note editor styling */
+
+.editContent{
+    width:90%;
+    max-height: calc(100vh-100px);
+    margin: 100px 5% 0 5%;
+
+    display: grid;
+    grid-auto-rows: max-content;
+
+    font-size: 1.2em;
+}
+
+.editObj{
+    height: 60px;
+    width: 100%;
+    margin: 5px 0 10px 0;
+}
+
+.editObj textarea{
+    resize: none;
+    min-height: 100%;
+    width: 100%;
+    padding: 5px 10px 5px 10px;
+}
+
+.editObj textarea:focus{
+    border:1px solid royalblue;
+    border-radius: 25px;
+}
+
+.submitButton{
+    position: absolute;
+    top:0;
+    right:0;
+}
+
+/* subtopic add form styling */
+
+.addSubtopicForm{
+    display: grid;
+
+}
+
+.addSubtopicForm textarea{
+    justify-self: center;
+    width: 65%;
+    resize: none;
+    border-radius: 50px;
+    margin: 4px 10px 4px 10px;
+    padding: 4px 10px 4px 10px;
+}
+
+.addSubtopicForm button{
+    margin-top: 5px;
+    margin-right: 20%;
+    justify-self: end;
+    width: 50px;
+    padding: 5px 0 5px 0;
+    border-radius: 25px;
+
+}
+
+
+/* flashcard styling */
+
+
+.exitFlashcards{
+    position: absolute;
+    top:0;
+    left:0;
+    height: 100vh;
+    width:250px;
+    background:red;
+    z-index: 3;
+    display: grid;
+}
+
+.exitFlashcards button{
+    background: transparent;
+    height: max-content;
+    width: max-content;
+    justify-self: center;
+    align-self: center;
+    border: 1px solid white;
+    border-radius: 25px;
+    padding: 5px 20px 5px 20px;
+    color: white;
+    font-weight: 500;
+
+}
+
+
+
+.flashCardWrapper{
+    padding: 10vh 10px 0 10px;
+    height: 90vh;
+    max-height: 1000px;
+    width: 70%;
+    min-width: 500px;
+    justify-self: center;
+}
+
+.flashCardItemWrapper{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    height: 100%;
+    grid-row-gap: 30px;
+}
+
+@media(max-width:1400px){
+    .flashCardWrapper{
+        padding: 10vh 5px 0 5px;
+        width: 80%;
+    }
+
+    .flashCardItemWrapper{
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media(max-width:910px){
+    .flashCardWrapper{
+        width: 95%;
+    }
+
+}
+
+
+.flashCardTopicItem{
+    border-radius: 35px;
+    justify-self: center;
+    
+    height:300px;
+    width:250px;
+
+    display: grid;
+    grid-template-rows: 3fr 2fr;
+    background: linear-gradient(to bottom, red, red 60%, #d3d3d3 60%, #d3d3d3 100%);
+
+}
+
+.flashCardTopicItem p{
+    justify-self: center;
+    align-self: center;
+    width: max-content;
+    height: max-content;
+}
+
+
+.flashcard{
+    width: 80%;
+    margin: 100px 10% 5%;
+    background: white;
+    border:3px solid red;
+    border-radius: 25px;
+    height: 60%;
+    display: grid;
+}
+
+.flashcard p{
+    width: max-content;
+    height: max-content;
+    justify-self: center;
+    align-self: center;
+}
+
+.flashCardButtons{
+    position: absolute;
+    bottom: 10%;
+    left:50%;
+    transform: translateX(-50%);
+    width:350px;
+    display: grid;
+    grid-template-columns:1fr 1fr ;
+}
+
+.flashCardButtons button{
+    font-size: 1.05em;
+    margin: 20px;
+    padding: 5px 0 5px 0;
+    border-radius: 25px;
+    border: 2px solid red;
+    background: none;
+    color:red;
+    font-weight: 500;
+}
+
+.progressBar{
+    justify-self: center;
+    border:2px solid red;
+    border-radius: 25px;
+    width: 70%;
+    height: 25px;
+    position: absolute;
+    top:0; 
+    left:50%;
+    transform: translate(-50%,0%);
+    display: grid;
+}
+
+.bar{
+    border-radius: 25px;
+    background: red;
+}
+
+
+.completeDeck{
+    position: absolute;
+    top:40%;
+    left:50%;
+    transform: translate(-50%, -50%);
+}
