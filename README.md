@@ -1,5 +1,9 @@
 # csia-v3
 
+BEFORE APP CAN BE USED, INSECURE CONTENT EXCEPTION MUST BE ADDED. INSTRUCTIONS FOR THIS CAN BE FOUND AT https://github.com/19lob419lob4/csia-v3/blob/main/insecure%20content.PNG
+
+App can be accessed at : https://19lob419lob4.github.io/csiaF/
+
 Old Repo is : https://github.com/19lob419lob4/csia2
 
 Prerequisites to programming
