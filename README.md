@@ -2,7 +2,7 @@
 
 BEFORE APP CAN BE USED, INSECURE CONTENT EXCEPTION MUST BE ADDED. INSTRUCTIONS FOR THIS CAN BE FOUND AT https://raw.githubusercontent.com/19lob419lob4/csia-v3/main/insecure%20content%20tutorial.png
 
-App can be accessed at : https://19lob419lob4.github.io/csiaF/ with password 'test1234'
+App can be accessed at : https://19lob419lob4.github.io/csiaF/
 
 Old Repo is : https://github.com/19lob419lob4/csia2
 
